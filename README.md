@@ -10,9 +10,10 @@ Aplicación web que permite cargar dumps de bases de datos MySQL y realizar cons
 
 ### Instalación
 
-1. **Clonar/descargar el proyecto**
+1. **Clonar el proyecto**
 ```bash
-cd sql-chat-app
+git clone git@github.com:walteru/Chat-SQL.git
+cd Chat-SQL
 ```
 
 2. **Iniciar la aplicación**
@@ -57,10 +58,12 @@ make test      # Probar conectividad
 
 ## 🏗️ Arquitectura
 
-- **Frontend**: HTML/CSS/JavaScript (Puerto 8080)
-- **Backend**: Node.js + Express (Puerto 3000)
-- **Base de datos**: MySQL 8.0 (Puerto 3307)
+- **Frontend**: HTML/CSS/JavaScript (host 8080)
+- **Backend**: Node.js + Express (host 3001 → 3000 interno)
+- **Base de datos**: MySQL 8.0 (host 3307 → 3306 interno)
 - **Proxy**: Nginx
+
+> Normalmente solo necesitás el frontend en `http://localhost:8080`; Nginx hace de proxy hacia el backend. Los puertos de backend y MySQL se exponen al host solo para depuración.
 
 ## 🔧 Desarrollo
 
@@ -78,11 +81,11 @@ make dev-shell-mysql     # MySQL CLI
 
 ## ⚡ Puertos
 
-| Servicio | Puerto | URL |
-|----------|--------|-----|
-| Frontend | 8080 | http://localhost:8080 |
-| Backend API | 3001 | http://localhost:3001 |
-| MySQL | 3307 | mysql://localhost:3307 |
+| Servicio | Puerto host | Puerto interno | URL |
+|----------|-------------|----------------|-----|
+| Frontend | 8080 | 80 | http://localhost:8080 |
+| Backend API | 3001 | 3000 | http://localhost:3001 |
+| MySQL | 3307 | 3306 | mysql://localhost:3307 |
 
 ## 🔐 Seguridad
 
