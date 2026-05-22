@@ -40,9 +40,21 @@ Una vez cargada la base de datos:
 - La IA convertirá tu pregunta a SQL y ejecutará la consulta
 
 ### 3. Seguridad
-- Solo se permiten consultas **SELECT** (solo lectura)
+- Solo se ejecutan consultas **SELECT**: se valida que sea **una única sentencia**
+  SELECT (se rechazan sentencias apiladas tipo `SELECT 1; DROP TABLE ...`, los
+  `SELECT ... INTO OUTFILE/DUMPFILE`, y **cualquier comentario SQL** `/* */ -- #`
+  —que MySQL trata como espacio y permitiría ofuscar keywords—), y además la
+  query del chat corre en una conexión con `multipleStatements: false` que rechaza
+  varias sentencias a nivel del driver. Ver `backend/sqlGuard.js` (con tests en
+  `backend/sqlGuard.test.js`).
+  > Nota: por seguridad la validación es conservadora; rechaza la query aunque el
+  > comentario o el texto `into outfile` aparezcan dentro de un string literal.
 - Tu API key **no se guarda** en el servidor
 - Los datos se procesan localmente en Docker
+
+> Endurecimiento opcional recomendado para entornos sensibles: usar un usuario
+> MySQL con permisos `SELECT` únicamente para las consultas del chat (defensa en
+> profundidad sobre la validación).
 
 ## 🛠️ Comandos Disponibles
 

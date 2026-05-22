@@ -5,6 +5,7 @@ const mysql = require('mysql2/promise');
 const fs = require('fs').promises;
 const path = require('path');
 const axios = require('axios');
+const { validateSelectQuery } = require('./sqlGuard');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -226,22 +227,31 @@ Please provide ONLY the SQL query (no explanations, no markdown, no additional t
     });
 
     const sqlQuery = claudeResponse.data.content[0].text.trim();
-    
-    // Validate query is SELECT only
-    if (!sqlQuery.toLowerCase().trim().startsWith('select')) {
-      return res.status(400).json({ 
-        error: 'Only SELECT queries are allowed for security reasons'
-      });
+
+    // Validar: una ÚNICA sentencia SELECT, sin escritura de archivos.
+    const verdict = validateSelectQuery(sqlQuery);
+    if (!verdict.valid) {
+      return res.status(400).json({ error: verdict.error });
     }
 
-    // Execute the query
-    const [results] = await dbConnection.query(sqlQuery);
-    
-    res.json({
-      query: sqlQuery,
-      results: results,
-      rowCount: results.length
-    });
+    // Ejecutar en una conexión dedicada con multipleStatements:false (defensa en
+    // profundidad: el driver rechaza sentencias apiladas). La conexión principal
+    // mantiene multipleStatements:true porque el import de dumps lo necesita.
+    let queryConnection;
+    try {
+      queryConnection = await mysql.createConnection({ ...dbConfig, multipleStatements: false });
+      const [results] = await queryConnection.query(sqlQuery);
+
+      res.json({
+        query: sqlQuery,
+        results: results,
+        rowCount: results.length
+      });
+    } finally {
+      if (queryConnection) {
+        await queryConnection.end();
+      }
+    }
 
   } catch (error) {
     console.error('❌ Chat error:', error.message);
