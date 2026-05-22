@@ -1,0 +1,23 @@
+# Dependencias
+node_modules/
+npm-debug.log*
+
+# Entorno / secretos
+.env
+.env.local
+*.local
+
+# Datos subidos por el usuario (dumps SQL)
+uploads/*
+!uploads/.gitkeep
+
+# Docker / datos de MySQL
+docker/mysql/data/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Claude Code local settings
+.claude/settings.local.json
