@@ -2,6 +2,8 @@
 
 Aplicación web que permite cargar dumps de bases de datos MySQL y realizar consultas en lenguaje natural usando Claude AI.
 
+> 📝 ¿Por qué solo se ejecutan `SELECT` y cómo se valida la query antes de tocar la base? Lo cuento acá: [Chat-SQL: de lenguaje natural a SQL, sin abrir la base de par en par](https://sincrodev.com/blog/chat-sql-de-lenguaje-natural-a-sql/).
+
 ## 🚀 Inicio Rápido
 
 ### Prerrequisitos
